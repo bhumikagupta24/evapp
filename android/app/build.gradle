@@ -70,7 +70,12 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
+    // ndkVersion is intentionally disabled for this local setup.
+    // Your build currently fails during Gradle configuration because the required NDK
+    // license cannot be accepted (sdkmanager not available).
+    // React Native typically builds fine without pinning an NDK version unless a dependency
+    // explicitly requires native NDK compilation.
+    // ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
