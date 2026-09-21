@@ -15,7 +15,10 @@ export default function AuthCheck({navigation}) {
             const db = getFirestore();
             userDoc = await getDoc(doc(db, 'users', user.uid));
           } catch (dbError) {
-            console.log('Firestore read warning (check security rules):', dbError.message);
+            console.log(
+              'Firestore read warning (check security rules):',
+              dbError.message,
+            );
           }
 
           if (userDoc && userDoc.exists) {
