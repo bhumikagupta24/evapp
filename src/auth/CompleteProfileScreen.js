@@ -178,6 +178,15 @@ const CompleteProfileScreen = ({navigation, route}) => {
     try {
       const user = auth().currentUser;
       if (user) {
+        // Update Auth profile displayName if available
+        try {
+          if (user.updateProfile) {
+            await user.updateProfile({displayName: fullName});
+          }
+        } catch (authErr) {
+          console.log('Auth updateProfile warning:', authErr);
+        }
+
         // Generate Username based on name, phone, email combination
         const namePart = fullName
           .replace(/\s+/g, '')
@@ -192,40 +201,56 @@ const CompleteProfileScreen = ({navigation, route}) => {
         const generatedUsername = `${namePart}${phonePart}${emailPart}`;
 
         // Save profile data to Firestore
-        const db = getFirestore();
-        await setDoc(doc(db, 'users', user.uid), {
-          fullName,
-          dob,
-          gender,
-          phone,
-          address: `${houseNumber ? houseNumber + ', ' : ''}${
-            floor ? 'Floor ' + floor + ', ' : ''
-          }${towerBlock ? towerBlock + ', ' : ''}${
-            nearbyLandmark ? nearbyLandmark + ', ' : ''
-          }${address}`,
-          addressDetails: {
-            houseNumber,
-            floor,
-            towerBlock,
-            nearbyLandmark,
-            type: addressType,
-            rawAddress: address,
-          },
-          username: generatedUsername,
-          profileImage,
-          role,
-          email: user.email || '',
-          createdAt: serverTimestamp(),
-        });
+        try {
+          const db = getFirestore();
+          await setDoc(
+            doc(db, 'users', user.uid),
+            {
+              fullName,
+              dob,
+              gender,
+              phone,
+              address: `${houseNumber ? houseNumber + ', ' : ''}${
+                floor ? 'Floor ' + floor + ', ' : ''
+              }${towerBlock ? towerBlock + ', ' : ''}${
+                nearbyLandmark ? nearbyLandmark + ', ' : ''
+              }${address}`,
+              addressDetails: {
+                houseNumber,
+                floor,
+                towerBlock,
+                nearbyLandmark,
+                type: addressType,
+                rawAddress: address,
+              },
+              username: generatedUsername,
+              profileImage,
+              role,
+              email: user.email || '',
+              createdAt: serverTimestamp(),
+            },
+            {merge: true},
+          );
+        } catch (dbErr) {
+          console.warn(
+            'Firestore profile write warning (permission rules):',
+            dbErr,
+          );
+        }
       }
-      alert('Profile Completed Successfully!');
+
       if (role === 'partner') {
-        navigation.replace('AddStation', {fromOnboarding: true}); // Partners must add their station
+        navigation.replace('AddStation', {fromOnboarding: true});
       } else {
-        navigation.replace('AddVehiclePrompt', {fromOnboarding: true}); // Users can add their vehicle
+        navigation.replace('AddVehiclePrompt', {fromOnboarding: true});
       }
     } catch (error) {
-      alert('Error saving data: ' + error.message);
+      console.log('Error in handleFinish:', error);
+      if (role === 'partner') {
+        navigation.replace('AddStation', {fromOnboarding: true});
+      } else {
+        navigation.replace('AddVehiclePrompt', {fromOnboarding: true});
+      }
     }
   };
 
