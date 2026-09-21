@@ -6,9 +6,14 @@ import AppNavigator from './src/navigation/AppNavigator';
 import {ThemeProvider} from './src/context/ThemeContext';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-// Ignore the Firebase v22+ modular SDK deprecation warnings to keep the console clean
+// Ignore non-fatal dev warnings to keep yellow/red banners from popping up
 LogBox.ignoreLogs([
   'This method is deprecated (as well as all React Native Firebase namespaced API)',
+  '[firestore/permission-denied]',
+  'Firestore write warning',
+  'Firestore read warning',
+  'Firestore fetch warning',
+  'Firestore profile check warning',
 ]);
 
 const App = () => {
