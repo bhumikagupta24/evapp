@@ -25,6 +25,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import Geolocation from '@react-native-community/geolocation';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const {width} = Dimensions.get('window');
@@ -45,6 +46,8 @@ const CompleteProfileScreen = ({navigation, route}) => {
   const [role, setRole] = useState('user');
   const [isFocused, setIsFocused] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date());
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -625,26 +628,57 @@ const CompleteProfileScreen = ({navigation, route}) => {
                 <Text style={[styles.label, {color: theme.text}]}>
                   Date of Birth
                 </Text>
-                <View
+                <TouchableOpacity
+                  activeOpacity={0.8}
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: theme.card,
-                      borderColor:
-                        isFocused === 'dob' ? theme.primary : theme.border,
+                      borderColor: showDatePicker
+                        ? theme.primary
+                        : theme.border,
                       borderWidth: 1.5,
                     },
-                  ]}>
-                  <TextInput
-                    style={[styles.input, {color: theme.text}]}
-                    placeholder="DD / MM / YYYY"
-                    placeholderTextColor={theme.subtext}
-                    value={dob}
-                    onChangeText={setDob}
-                    onFocus={() => setIsFocused('dob')}
-                    onBlur={() => setIsFocused('')}
+                  ]}
+                  onPress={() => setShowDatePicker(true)}>
+                  <Icon
+                    name="calendar-outline"
+                    size={22}
+                    color={theme.primary}
+                    style={styles.inputIcon}
                   />
-                </View>
+                  <Text
+                    style={[
+                      styles.input,
+                      {
+                        color: dob ? theme.text : theme.subtext,
+                        textAlignVertical: 'center',
+                        marginTop: Platform.OS === 'android' ? 4 : 0,
+                      },
+                    ]}>
+                    {dob || 'DD / MM / YYYY'}
+                  </Text>
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={date instanceof Date ? date : new Date()}
+                    mode="date"
+                    display={Platform.OS === 'android' ? 'spinner' : 'default'}
+                    maximumDate={new Date()}
+                    onChange={(event, selectedDate) => {
+                      setShowDatePicker(Platform.OS === 'ios');
+                      if (selectedDate) {
+                        setDate(selectedDate);
+                        const formattedDate = `${String(
+                          selectedDate.getDate(),
+                        ).padStart(2, '0')} / ${String(
+                          selectedDate.getMonth() + 1,
+                        ).padStart(2, '0')} / ${selectedDate.getFullYear()}`;
+                        setDob(formattedDate);
+                      }
+                    }}
+                  />
+                )}
               </View>
 
               <View style={styles.inputGroup}>
