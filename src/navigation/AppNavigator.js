@@ -61,6 +61,7 @@ const AppNavigator = () => {
       <Stack.Screen name="setting" component={SettingScreen} />
       <Stack.Screen name="account" component={AccountSettingsScreen} />
       <Stack.Screen name="notification" component={NotificationScreen} />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
       <Stack.Screen name="BatteryHealth" component={BatteryHealthScreen} />
       <Stack.Screen name="CarbonOffset" component={CarbonOffsetScreen} />
       <Stack.Screen name="eco" component={EcoPointsScreen} />
