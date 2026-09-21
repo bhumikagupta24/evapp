@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -8,23 +8,43 @@ import {
   TouchableOpacity,
   Alert,
   Image,
-  RefreshControl
+  RefreshControl,
+  StatusBar,
+  Dimensions,
+  Animated,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import auth, {getAuth, signOut} from '@react-native-firebase/auth';
+import {
+  getFirestore,
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  where,
+} from '@react-native-firebase/firestore';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useTheme} from '../context/ThemeContext';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+const {width} = Dimensions.get('window');
 
 export default function ProfileScreen() {
+  const {theme, isDarkMode} = useTheme();
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useState(null);
-  const [bookingStats, setBookingStats] = useState(null);
+  const [bookingStats, setBookingStats] = useState({
+    totalBookings: 0,
+    totalSpent: 0,
+    totalKwh: 0,
+  });
   const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [fadeAnim] = useState(new Animated.Value(0));
 
-  const userId = auth().currentUser?.uid; // Unique key for this user's profile
+  const userId = auth().currentUser?.uid;
 
   useFocusEffect(
     useCallback(() => {
@@ -35,268 +55,514 @@ export default function ProfileScreen() {
         }
       };
       loadImage();
-    }, [])
+    }, [userId]),
   );
 
-  // Function to load profile data
-  const loadProfile = async () => {
-    const user = auth().currentUser;
-    if (!user) {
-      Alert.alert('Error', 'User not logged in.');
+  useEffect(() => {
+    if (!userId) {
       return;
     }
 
-    try {
-      setLoading(true);
-      const userRef = firestore().collection('Users').doc(userId);
-      const userDoc = await userRef.get();
+    setLoading(true);
 
-      if (userDoc.exists) {
-        const data = userDoc.data();
-        console.log('✅ Profile Data:', data);
-        setUserInfo(data);
-      } else {
-        Alert.alert('Missing Data', 'User profile not found.');
-      }
+    const db = getFirestore();
+    const userDocRef = doc(db, 'users', userId);
 
-      // Fetch bookings
-      const bookingSnap = await firestore()
-        .collection('Bookings')
-        .where('userId', '==', userId)
-        .get();
+    const unsubscribeUser = onSnapshot(
+      userDocRef,
+      docSnap => {
+        if (docSnap.exists) {
+          setUserInfo(docSnap.data());
+        }
+        setLoading(false);
+        setRefreshing(false);
+      },
+      error => {
+        console.error('❌ Error listening to profile:', error);
+        setLoading(false);
+        setRefreshing(false);
+      },
+    );
 
+    const bookingsQuery = collection(db, 'users', userId, 'ChargingHistory');
+    const unsubscribeBookings = onSnapshot(bookingsQuery, snapshot => {
       let totalSpent = 0;
-      bookingSnap.forEach(doc => {
+      let totalKwh = 0;
+      let totalSaved = 0;
+
+      snapshot.forEach(doc => {
         const data = doc.data();
-        totalSpent += data?.price || 0;
+        const duration = data?.durationHours || 1;
+        const kwh = data?.kwhCharged || duration * 50; // Fallback to 50kW if old data
+        const cost = data?.totalCost || kwh * 15; // Fallback to 15 Rs if old data
+        totalKwh += kwh;
+        totalSpent += cost;
+        totalSaved += kwh * 25; // Approx savings 25 Rs per kWh vs petrol
       });
 
       setBookingStats({
-        totalBookings: bookingSnap.size,
+        totalBookings: snapshot.size,
         totalSpent,
+        totalSaved,
+        totalKwh,
       });
-    } catch (err) {
-      console.error('❌ Error loading profile:', err);
-      Alert.alert('Error', 'Could not fetch profile');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
 
-  // Pull to refresh
-  const onRefresh = async () => {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      unsubscribeUser();
+      unsubscribeBookings();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
+
+  const onRefresh = () => {
+    // onSnapshot handles updates automatically, just set refreshing for UI feedback
     setRefreshing(true);
-    await loadProfile();
+    setTimeout(() => setRefreshing(false), 1000);
   };
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  const handleLogout = () => {
+    Alert.alert('Log Out', 'Are you sure you want to log out?', [
+      {text: 'Cancel', style: 'cancel'},
+      {
+        text: 'Log Out',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const authInstance = getAuth();
+            if (authInstance.currentUser) {
+              await signOut(authInstance);
+            }
+            navigation.reset({index: 0, routes: [{name: 'Login'}]});
+          } catch (error) {
+            console.error('Logout error:', error);
+          }
+        },
+      },
+    ]);
+  };
 
   if (loading && !refreshing) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2e7d32" />
+      <View style={[styles.centered, {backgroundColor: theme.background}]}>
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
 
-  if (!userInfo) {
-    return (
-      <View style={styles.centered}>
-        <Text>No profile data found.</Text>
+  const InfoItem = ({label, value, icon, isLast}) => (
+    <View
+      style={[
+        styles.infoItem,
+        !isLast && {borderBottomColor: theme.border, borderBottomWidth: 1},
+      ]}>
+      <View
+        style={[styles.infoIconContainer, {backgroundColor: theme.background}]}>
+        <Ionicons name={icon} size={20} color={theme.primary} />
       </View>
-    );
-  }
+      <View style={styles.infoTextContainer}>
+        <Text style={[styles.infoLabel, {color: theme.subtext}]}>{label}</Text>
+        <Text style={[styles.infoValue, {color: theme.text}]}>
+          {value || 'Not set'}
+        </Text>
+      </View>
+    </View>
+  );
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#2e7d32']} />
-      }
-    >
+    <View style={[styles.container, {backgroundColor: theme.background}]}>
+      <StatusBar
+        barStyle={theme.statusBarStyle}
+        backgroundColor={theme.background}
+      />
 
-      <View style={{
-          flex: 1, justifyContent: 'center',
-          alignContent: 'center', marginTop: 20,
-          padding: 20,
-        }}>
-      {/* HEADER */}
-     <View style={styles.header}>
-            <View style={{flexDirection:'row',columnGap:10}}>
+      <SafeAreaView style={{flex: 1}}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={[styles.headerBtn, {backgroundColor: theme.card}]}
+            onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={22} color={theme.primary} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, {color: theme.text}]}>
+            My Profile
+          </Text>
+          <TouchableOpacity
+            style={[styles.headerBtn, {backgroundColor: theme.card}]}
+            onPress={() => navigation.navigate('setting')}>
+            <Ionicons name="settings-outline" size={22} color={theme.primary} />
+          </TouchableOpacity>
+        </View>
 
-              <Image source={require('../assets/logo.png')} style={{
-                height: 30, width: 30,
-              }} />
-              <Text style={styles.heading}>GreenSteps</Text>
+        <Animated.ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          style={{opacity: fadeAnim}}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[theme.primary]}
+            />
+          }>
+          <View
+            style={[
+              styles.profileCard,
+              {backgroundColor: theme.card, borderColor: theme.border},
+            ]}>
+            <View style={styles.avatarWrapper}>
+              <View
+                style={[
+                  styles.avatarContainer,
+                  {backgroundColor: theme.primary, borderColor: theme.card},
+                ]}>
+                <Image
+                  source={
+                    profileImage
+                      ? {uri: profileImage}
+                      : require('../assets/user.png')
+                  }
+                  style={styles.avatarImage}
+                />
+              </View>
+              <TouchableOpacity
+                style={[
+                  styles.editAvatarButton,
+                  {backgroundColor: theme.text, borderColor: theme.card},
+                ]}
+                onPress={() => navigation.navigate('EditProfile')}>
+                <Ionicons name="camera" size={16} color={theme.card} />
+              </TouchableOpacity>
             </View>
+            <Text style={[styles.userName, {color: theme.text}]}>
+              {userInfo?.fullName || 'Eco User'}
+            </Text>
+            <Text style={[styles.userEmail, {color: theme.subtext}]}>
+              {userInfo?.email ||
+                auth().currentUser?.email ||
+                userInfo?.phone ||
+                'No contact info'}
+            </Text>
+
+            <View
+              style={[
+                styles.statsContainer,
+                {backgroundColor: theme.background, borderColor: theme.border},
+              ]}>
+              <View style={styles.statBox}>
+                <Text style={[styles.statValue, {color: theme.text}]}>
+                  {bookingStats.totalBookings}
+                </Text>
+                <Text style={styles.statLabel}>Charges</Text>
+              </View>
+              <View
+                style={[styles.statDivider, {backgroundColor: theme.border}]}
+              />
+              <View style={styles.statBox}>
+                <Text style={[styles.statValue, {color: theme.text}]}>
+                  {bookingStats.totalKwh}
+                </Text>
+                <Text style={styles.statLabel}>kWh</Text>
+              </View>
+              <View
+                style={[styles.statDivider, {backgroundColor: theme.border}]}
+              />
+              <View style={styles.statBox}>
+                <Text style={[styles.statValue, {color: theme.text}]}>
+                  ₹{bookingStats.totalSaved}
+                </Text>
+                <Text style={styles.statLabel}>Saved</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.infoSection}>
+            <Text style={[styles.sectionTitle, {color: theme.primary}]}>
+              Account Details
+            </Text>
+            <View style={[styles.infoCard, {backgroundColor: theme.card}]}>
+              <InfoItem
+                label="Username"
+                value={`@${userInfo?.username || 'eco_driver'}`}
+                icon="at-outline"
+              />
+              <InfoItem
+                label="Phone"
+                value={userInfo?.phone}
+                icon="call-outline"
+              />
+              <InfoItem
+                label="Address"
+                value={userInfo?.address}
+                icon="location-outline"
+              />
+              <InfoItem
+                label="Date of Birth"
+                value={userInfo?.dob}
+                icon="calendar-number-outline"
+              />
+              <InfoItem
+                label="Member Since"
+                value={
+                  userInfo?.createdAt
+                    ? new Date(
+                        userInfo.createdAt.seconds * 1000,
+                      ).toLocaleDateString('en-US', {
+                        month: 'short',
+                        year: 'numeric',
+                      })
+                    : new Date().toLocaleDateString('en-US', {
+                        month: 'short',
+                        year: 'numeric',
+                      })
+                }
+                icon="calendar-outline"
+                isLast
+              />
+            </View>
+          </View>
+
+          <View style={styles.actionSection}>
+            <TouchableOpacity
+              style={[styles.editButton, {backgroundColor: theme.primary}]}
+              onPress={() => navigation.navigate('EditProfile')}
+              activeOpacity={0.8}>
+              <Text style={styles.editButtonText}>Edit Profile Details</Text>
+              <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
+            </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => navigation.navigate('setting')}
-            >
-              <Image
-                source={require('../assets/setting.png')}
-                style={styles.icon}
-              />
+              style={[
+                styles.logoutButton,
+                {
+                  backgroundColor: 'rgba(239, 68, 68, 0.05)',
+                  borderColor: 'rgba(239, 68, 68, 0.1)',
+                },
+              ]}
+              onPress={handleLogout}
+              activeOpacity={0.7}>
+              <View style={styles.logoutIconContainer}>
+                <Ionicons name="log-out-outline" size={20} color="#EF4444" />
+              </View>
+              <Text style={styles.logoutText}>Sign Out</Text>
             </TouchableOpacity>
           </View>
-
-      {/* PROFILE CARD */}
-      <View style={styles.card}>
-        <View style={styles.cardd}>
-          <Image
-            source={profileImage ? { uri: profileImage } : require('../assets/user.png')}
-            style={styles.profileImage}
-          />
-
-          <View style={styles.infoContainer}>
-            <ProfileField label="Name" value={userInfo.fullName || 'Not Provided'} />
-            <ProfileField label="Username" value={userInfo.username || 'Not Provided'} />
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('EditProfile')}
-          style={{
-            backgroundColor: '#4CAF50',
-            paddingVertical: 10,
-            alignItems: 'center',
-            borderRadius: 10,
-          }}
-        >
-          <Text style={{ fontSize: 15, fontWeight: '700', color: '#fff' }}>Edit Profile</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* PERSONAL INFO */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>👤 Personal Info</Text>
-        <ProfileField label="Email" value={userInfo.email} />
-        <ProfileField label="Phone" value={userInfo.phone} />
-        <ProfileField label="Address" value={userInfo.address} />
-      </View>
-
-      {/* VEHICLE INFO */}
-      <View style={styles.card}>
-        <TouchableOpacity onPress={() => setIsOpen(!isOpen)}>
-          <Text style={styles.sectionTitle}>
-            🚗 Vehicle Info {isOpen ? '▲' : '▼'}
-          </Text>
-        </TouchableOpacity>
-        {isOpen && (
-          <View style={styles.details}>
-            <ProfileField label="Vehicle Type" value={userInfo.vehicleType} />
-            <ProfileField label="Vehicle Number" value={userInfo.vehicleNumber} />
-            <ProfileField label="Battery Capacity" value={userInfo.batteryCapacity} />
-          </View>
-        )}
-      </View>
-
-      {/* CHARGING HISTORY */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>📅 Charging History</Text>
-        <ProfileField label="Total Bookings" value={bookingStats?.totalBookings || 0} />
-        <ProfileField label="Total Amount Spent" value={`₹${bookingStats?.totalSpent || 0}`} />
-      </View>
-
-      </View>
-    </ScrollView>
+        </Animated.ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
-const ProfileField = ({ label, value }) => (
-  <View style={styles.fieldRow}>
-    <Text style={styles.label}>{label}:</Text>
-    <Text style={styles.value}>{value || '-'}</Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
-  container: { backgroundColor: '#f0f9f4' },
-      heading: {
-      fontSize: 26,
-      fontWeight: '700',
-      color: '#1b5e20',
-      marginBottom: 20,
-      textAlign: 'center',
-    },
-
-    editButton: {
-      backgroundColor: '#1976d2',
-      paddingVertical: 10,
-      borderRadius: 8,
-      alignItems: 'center',
-      marginBottom: 20,
-    },
-
-     icon: {
-      height: 20,
-      width: 20,
-      tintColor: "#58de5eff"
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      // paddingHorizontal: 20,
-      // paddingVertical: 15,
-      // backgroundColor: '#ffffff',
-      borderBottomWidth: 1,
-      borderBottomColor: '#acf194ff',
-      marginBottom: 10,
-      // shadowColor: '#000',
-      // shadowOpacity: 0.05,
-      // shadowOffset: { width: 0, height: 2 },
-      // shadowRadius: 4,
-      // elevation: 2,
-    },
-
-  card: {
-    backgroundColor: '#fff',
-    padding: 18,
-    borderRadius: 14,
-    marginBottom: 20,
-    elevation: 2,
+  container: {
+    flex: 1,
   },
-  profileImage: {
-    height: 90,
-    width: 90,
-    borderRadius: 45,
-    marginRight: 15,
-    borderWidth: 2,
-    borderColor: '#2e7d32',
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#388e3c',
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderColor: '#c8e6c9',
-    paddingBottom: 5,
-  },
-  fieldRow: { marginBottom: 10 },
-  infoContainer: { flex: 1 },
-  label: { fontSize: 13, fontWeight: '500', color: '#888' },
-  value: { fontSize: 16, fontWeight: '600', color: '#2e7d32' },
-  editButton: { backgroundColor: '#e8f5e9', padding: 8, borderRadius: 8 },
-  icon: { height: 25, width: 25, tintColor: '#2e7d32' },
-  cardd: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 15,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 6,
-    elevation: 4,
-    marginVertical: 10,
-    columnGap: 20,
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingTop: 10,
+    paddingBottom: 20,
   },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  headerBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 110, // Raised for floating tab bar clearance
+  },
+  profileCard: {
+    alignItems: 'center',
+    borderRadius: 40,
+    padding: 32,
+    marginTop: 10,
+    marginBottom: 32,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    borderWidth: 1,
+  },
+  avatarWrapper: {
+    position: 'relative',
+    marginBottom: 20,
+  },
+  avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 5,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  editAvatarButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+  },
+  userName: {
+    fontSize: 26,
+    fontWeight: '900',
+    marginBottom: 4,
+  },
+  userEmail: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 24,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+  },
+  statBox: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '700',
+    marginTop: 2,
+    textTransform: 'uppercase',
+  },
+  statDivider: {
+    width: 1,
+    height: 24,
+  },
+  infoSection: {
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 16,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+    marginLeft: 4,
+  },
+  infoCard: {
+    borderRadius: 30,
+    padding: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  infoIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  infoTextContainer: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  infoValue: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  actionSection: {
+    gap: 16,
+  },
+  editButton: {
+    height: 64,
+    borderRadius: 22,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+  },
+  editButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    borderRadius: 22,
+    gap: 12,
+    borderWidth: 1,
+  },
+  logoutIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: '#EF4444',
+    fontSize: 16,
+    fontWeight: '800',
+  },
 });
-

@@ -1,6 +1,6 @@
 // src/screens/Auth/LoginScreen.js
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   TextInput,
@@ -15,17 +15,25 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { firebase } from '@react-native-firebase/auth';
+import auth, {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithCredential,
+} from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {getFirestore, doc, getDoc} from '@react-native-firebase/firestore';
+import {useTheme} from '../context/ThemeContext';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({navigation}) {
+  const {theme} = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: '162149895143-50a97li5tsmt3gvo09r2gbcbnm4ro5er.apps.googleusercontent.com', // ✅ Your Web Client ID
+      webClientId:
+        '1006939023844-r3r5rg8a3nlpac9akn3ns82ibbrh08uu.apps.googleusercontent.com', // ✅ Real Web Client ID
       offlineAccess: true,
     });
   }, []);
@@ -37,29 +45,71 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(email, password);
-      const user = userCredential.user;
+      const userCredential = await signInWithEmailAndPassword(
+        auth(),
+        email,
+        password,
+      );
+      if (userCredential.user) {
+        const db = getFirestore();
+        const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
 
-      if (user) {
-        Alert.alert('Success', 'Logged in successfully!');
-        navigation.replace('TabBar');
+        if (userDoc.exists) {
+          navigation.replace('TabBar');
+        } else {
+          navigation.navigate('PhoneLogin');
+        }
       }
     } catch (error) {
-      Alert.alert('Login Failed', error.message);
-    } 
+      if (
+        error.code === 'auth/invalid-credential' ||
+        error.code === 'auth/user-not-found'
+      ) {
+        try {
+          const newUserCredential = await createUserWithEmailAndPassword(
+            auth(),
+            email,
+            password,
+          );
+          if (newUserCredential.user) {
+            Alert.alert('Success', 'New Account Created & Logged In!');
+            navigation.navigate('PhoneLogin');
+          }
+        } catch (signUpError) {
+          Alert.alert('Error', signUpError.message);
+        }
+      } else {
+        Alert.alert('Login Failed', error.message);
+      }
+    }
   };
 
   const handleGoogleLogin = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const { idToken } = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      const userCredential = await auth().signInWithCredential(googleCredential);
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.data?.idToken || userInfo.idToken;
+
+      if (!idToken) {
+        throw new Error('No ID token found!');
+      }
+
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(
+        auth(),
+        googleCredential,
+      );
       const user = userCredential.user;
 
       if (user) {
-        Alert.alert('Success', 'Logged in with Google!');
-        navigation.replace('TabBar');
+        const db = getFirestore();
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+
+        if (userDoc.exists) {
+          navigation.replace('TabBar');
+        } else {
+          navigation.navigate('PhoneLogin');
+        }
       }
     } catch (error) {
       console.error('Google Sign-In Error:', error);
@@ -69,52 +119,63 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+      style={[styles.container, {backgroundColor: theme.background}]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.inner}>
           <Image
-            source={require('../assets/logo.png')} // ✅ Ensure this path is correct
+            source={require('../assets/Logo1.png')} // ✅ Updated logo
             style={styles.logo}
             resizeMode="contain"
           />
 
-          <Text style={styles.title}>Welcome to GreenSteps 🌱</Text>
+          <Text style={[styles.title, {color: theme.text}]}>
+            Welcome to GreenSteps
+          </Text>
 
           <TextInput
             placeholder="Email"
-            placeholderTextColor="#555"
             value={email}
             onChangeText={setEmail}
-            style={styles.input}
-            autoCapitalize="none"
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.card,
+                borderColor: theme.border,
+                color: theme.text,
+              },
+            ]}
+            placeholderTextColor={theme.subtext}
             keyboardType="email-address"
           />
 
           <TextInput
             placeholder="Password"
-            placeholderTextColor="#555"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            style={styles.input}
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.card,
+                borderColor: theme.border,
+                color: theme.text,
+              },
+            ]}
+            placeholderTextColor={theme.subtext}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Log In</Text>
+          <TouchableOpacity
+            style={[styles.button, {backgroundColor: theme.primary}]}
+            onPress={handleLogin}>
+            <Text style={styles.buttonText}>Log In / Sign Up</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#db4437' }]} onPress={handleGoogleLogin}>
-            <Text style={[styles.buttonText, { color: '#fff' }]}>Sign in with Google</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.replace('Register')}>
-            <Text style={styles.link}>
-              Don't have an account?{' '}
-              <Text style={{ color: 'green', textDecorationLine: 'underline', fontWeight: '800' }}>
-                Register
-              </Text>
+          <TouchableOpacity
+            style={[styles.button, {backgroundColor: '#db4437'}]}
+            onPress={handleGoogleLogin}>
+            <Text style={[styles.buttonText, {color: '#fff'}]}>
+              Sign in with Google
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -170,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   link: {
-    color: '#388e3c',
+    color: '#0a0a0a',
     textAlign: 'center',
     fontSize: 14,
     marginTop: 10,

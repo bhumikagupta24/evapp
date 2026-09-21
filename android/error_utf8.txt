@@ -1,0 +1,167 @@
+﻿> Task :gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:inspectClassesForKotlinIC UP-TO-DATE
+
+> Configure project :react-native-firebase_app
+:react-native-firebase_app package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:firebase.bom using default value: 34.10.0
+:react-native-firebase_app:play.play-services-auth using default value: 21.5.0
+:react-native-firebase_app package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:version set from package.json: 24.0.0 (24,0,0 - 24000000)
+:react-native-firebase_app:android.compileSdk using custom value: 34
+:react-native-firebase_app:android.targetSdk using custom value: 34
+:react-native-firebase_app:android.minSdk using custom value: 23
+:react-native-firebase_app:reactNativeAndroidDir D:\Green_Natural\Green_Natural\GreenSteps\node_modules\react-native\android
+[33m [react-native-firebase] Legacy Architecture support is deprecated for all modules
+[33m [react-native-firebase] New Architecture support is already required for some modules
+[33m [react-native-firebase] all modules will require it in the future.
+[33m [react-native-firebase] Suppress this with environment variable RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING=1[0m
+
+> Configure project :react-native-firebase_auth
+:react-native-firebase_auth package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\auth\package.json
+:react-native-firebase_app package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_auth:firebase.bom using default value: 34.10.0
+:react-native-firebase_auth package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\auth\package.json
+:react-native-firebase_auth:version set from package.json: 24.0.0 (24,0,0 - 24000000)
+:react-native-firebase_auth:android.compileSdk using custom value: 34
+:react-native-firebase_auth:android.targetSdk using custom value: 34
+:react-native-firebase_auth:android.minSdk using custom value: 23
+:react-native-firebase_auth:reactNativeAndroidDir D:\Green_Natural\Green_Natural\GreenSteps\node_modules\react-native\android
+
+> Configure project :react-native-firebase_firestore
+:react-native-firebase_firestore package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\firestore\package.json
+:react-native-firebase_app package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_firestore:firebase.bom using default value: 34.10.0
+:react-native-firebase_firestore package.json found at D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@react-native-firebase\firestore\package.json
+:react-native-firebase_firestore:version set from package.json: 24.0.0 (24,0,0 - 24000000)
+:react-native-firebase_firestore:android.compileSdk using custom value: 34
+:react-native-firebase_firestore:android.targetSdk using custom value: 34
+:react-native-firebase_firestore:android.minSdk using custom value: 23
+:react-native-firebase_firestore:reactNativeAndroidDir D:\Green_Natural\Green_Natural\GreenSteps\node_modules\react-native\android
+WARNING: We recommend using a newer Android Gradle plugin to use compileSdk = 35
+
+This Android Gradle plugin (8.1.1) was tested up to compileSdk = 34.
+
+You are strongly encouraged to update your project to use a newer
+Android Gradle plugin that has been tested with compileSdk = 35.
+
+If you are already using the latest version of the Android Gradle plugin,
+you may need to wait until a newer version with support for compileSdk = 35 is available.
+
+To suppress this warning, add/update
+    android.suppressUnsupportedCompileSdk=35
+to this project's gradle.properties.
+
+> Task :@react-native-community_datetimepicker:preBuild UP-TO-DATE
+> Task :@react-native-community_datetimepicker:preDebugBuild UP-TO-DATE
+> Task :@react-native-community_datetimepicker:generateDebugBuildConfig UP-TO-DATE
+> Task :@react-native-community_datetimepicker:generateDebugResValues UP-TO-DATE
+> Task :@react-native-community_datetimepicker:generateDebugResources UP-TO-DATE
+> Task :@react-native-community_datetimepicker:packageDebugResources UP-TO-DATE
+> Task :@react-native-community_datetimepicker:parseDebugLocalResources UP-TO-DATE
+> Task :@react-native-community_datetimepicker:processDebugManifest UP-TO-DATE
+> Task :@react-native-community_datetimepicker:generateDebugRFile UP-TO-DATE
+> Task :@react-native-community_datetimepicker:javaPreCompileDebug UP-TO-DATE
+> Task :@react-native-community_datetimepicker:compileDebugJavaWithJavac UP-TO-DATE
+> Task :@react-native-community_datetimepicker:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:generatePackageList
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :@react-native-community_datetimepicker:compileDebugLibraryResources UP-TO-DATE
+> Task :@react-native-community_datetimepicker:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-async-storage_async-storage:preBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:preDebugBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-community_datetimepicker:preBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:preDebugBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-firebase_app:preBuild UP-TO-DATE
+> Task :react-native-firebase_app:preDebugBuild UP-TO-DATE
+> Task :react-native-firebase_app:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-firebase_auth:preBuild UP-TO-DATE
+> Task :react-native-firebase_auth:preDebugBuild UP-TO-DATE
+> Task :react-native-firebase_auth:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-firebase_firestore:preBuild UP-TO-DATE
+> Task :react-native-firebase_firestore:preDebugBuild UP-TO-DATE
+> Task :react-native-firebase_firestore:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-google-fit:preBuild UP-TO-DATE
+> Task :react-native-google-fit:preDebugBuild UP-TO-DATE
+> Task :react-native-google-fit:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-google-signin_google-signin:preBuild UP-TO-DATE
+> Task :react-native-google-signin_google-signin:preDebugBuild UP-TO-DATE
+> Task :react-native-google-signin_google-signin:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-image-picker:preBuild UP-TO-DATE
+> Task :react-native-image-picker:preDebugBuild UP-TO-DATE
+> Task :react-native-image-picker:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-maps:preBuild UP-TO-DATE
+> Task :react-native-maps:preDebugBuild UP-TO-DATE
+> Task :react-native-maps:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:preDebugBuild UP-TO-DATE
+> Task :react-native-safe-area-context:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-screens:preDebugBuild UP-TO-DATE
+> Task :react-native-screens:writeDebugAarMetadata UP-TO-DATE
+> Task :react-native-vector-icons:preBuild UP-TO-DATE
+> Task :react-native-vector-icons:preDebugBuild UP-TO-DATE
+> Task :react-native-vector-icons:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateDebugResValues UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateDebugResources UP-TO-DATE
+> Task :react-native-async-storage_async-storage:packageDebugResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateDebugResValues UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateDebugResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:packageDebugResources FAILED
+.\gradlew : 
+At line:1 char:14
++ cd android ; .\gradlew app:installDebug > error.txt 2>&1
++              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+A problem was found with the configuration of task ':react-native-community_datetimepicker:packageDebugResources' 
+(type 'MergeResources').
+  - Gradle detected a problem with the following location: 'D:\Green_Natural\Green_Natural\GreenSteps\node_modules\@rea
+ct-native-community\datetimepicker\android\build\generated\res\resValues\debug'.
+    
+    Reason: Task ':react-native-community_datetimepicker:packageDebugResources' uses this output of task 
+':@react-native-community_datetimepicker:generateDebugResValues' without declaring an explicit or implicit dependency. 
+This can lead to incorrect results being produced, depending on what order the tasks are executed.
+    
+    Possible solutions:
+      1. Declare task ':@react-native-community_datetimepicker:generateDebugResValues' as an input of 
+':react-native-community_datetimepicker:packageDebugResources'.
+      2. Declare an explicit dependency on ':@react-native-community_datetimepicker:generateDebugResValues' from 
+':react-native-community_datetimepicker:packageDebugResources' using Task#dependsOn.
+      3. Declare an explicit dependency on ':@react-native-community_datetimepicker:generateDebugResValues' from 
+':react-native-community_datetimepicker:packageDebugResources' using Task#mustRunAfter.
+    
+    For more information, please refer to 
+https://docs.gradle.org/8.3/userguide/validation_problems.html#implicit_dependency in the Gradle documentation.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 5s
+37 actionable tasks: 2 executed, 35 up-to-date

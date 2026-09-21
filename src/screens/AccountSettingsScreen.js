@@ -1,82 +1,151 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import auth from '@react-native-firebase/auth';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../context/ThemeContext';
+import Header from '../components/Header';
 
-const SettingItem = ({ title, screen }) => {
+const SettingItem = ({title, screen, icon}) => {
+  const {theme} = useTheme();
   const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.item} onPress={() => navigation.navigate(screen)}>
-      <Text style={styles.itemText}>{title}</Text>
+    <TouchableOpacity
+      style={[
+        styles.item,
+        {backgroundColor: theme.card, borderColor: theme.border},
+      ]}
+      onPress={() => navigation.navigate(screen)}
+      activeOpacity={0.7}>
+      <View style={styles.itemLeft}>
+        <Text style={styles.itemIcon}>{icon}</Text>
+        <Text style={[styles.itemText, {color: theme.text}]}>{title}</Text>
+      </View>
+      <Text style={{color: theme.subtext, fontSize: 18}}>›</Text>
     </TouchableOpacity>
   );
 };
 
 export default function AccountSettingsScreen() {
-  const navigation = useNavigation();
-
-  const handleLogout = async () => {
-    try {
-      await auth().signOut();
-      navigation.replace('Login');
-    } catch (err) {
-      alert('Logout failed');
-    }
-  };
+  const {theme} = useTheme();
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.heading}>Settings</Text>
+    <SafeAreaView
+      style={[styles.container, {backgroundColor: theme.background}]}>
+      <StatusBar
+        barStyle={theme.statusBarStyle}
+        backgroundColor={theme.background}
+      />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}>
+        <Header title="Account" />
 
-      <SettingItem title="Account Settings" screen="AccountSettings" />
-      <SettingItem title="Payment Methods" screen="PaymentMethods" />
-      <SettingItem title="Charging History" screen="ChargingHistory" />
-      <SettingItem title="Notifications" screen="NotificationsSettings" />
-      <SettingItem title="Privacy & Security" screen="PrivacySecurity" />
-      <SettingItem title="Theme & Display" screen="ThemeDisplay" />
-      <SettingItem title="Help & Support" screen="HelpSupport" />
-      <SettingItem title="About App" screen="AboutApp" />
+        <View style={styles.section}>
+          <SettingItem title="Profile Details" screen="EditProfile" icon="👤" />
+          <SettingItem
+            title="Payment Methods"
+            screen="PaymentMethods"
+            icon="💳"
+          />
+          <SettingItem
+            title="Privacy & Security"
+            screen="PrivacySecurity"
+            icon="🛡️"
+          />
+          <SettingItem
+            title="Password & Security"
+            screen="ChangePassword"
+            icon="🔑"
+          />
+        </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>🚪 Logout</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <Text style={[styles.sectionTitle, {color: theme.subtext}]}>
+          Preferences
+        </Text>
+        <View style={styles.section}>
+          <SettingItem title="Notifications" screen="notification" icon="🔔" />
+          <SettingItem
+            title="Theme & Display"
+            screen="ThemeDisplay"
+            icon="🎨"
+          />
+          <SettingItem title="Language" screen="Language" icon="🌐" />
+        </View>
+
+        <Text style={[styles.sectionTitle, {color: theme.subtext}]}>
+          App Info
+        </Text>
+        <View style={styles.section}>
+          <SettingItem title="Help & Support" screen="HelpSupport" icon="🎧" />
+          <SettingItem title="About GreenSteps" screen="AboutApp" icon="ℹ️" />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f0f9f4',
+  container: {flex: 1},
+  scrollContent: {padding: 24, paddingBottom: 40},
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 32,
   },
-  heading: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#2e7d32',
-    marginBottom: 20,
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 12,
+    marginLeft: 4,
   },
   item: {
-    backgroundColor: '#ffffff',
-    padding: 15,
-    marginVertical: 6,
-    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginBottom: 12,
     elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  itemIcon: {
+    fontSize: 20,
+    marginRight: 12,
   },
   itemText: {
-    fontSize: 16,
-    color: '#2e7d32',
-    fontWeight: '500',
-  },
-  logoutButton: {
-    backgroundColor: '#c62828',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  logoutText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },

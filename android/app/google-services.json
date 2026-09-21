@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "162149895143",
-    "project_id": "greensteps-fb4d6",
-    "storage_bucket": "greensteps-fb4d6.firebasestorage.app"
+    "project_number": "1006939023844",
+    "project_id": "evservice-a1cbb",
+    "storage_bucket": "evservice-a1cbb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:162149895143:android:45cad1c6271547cfdd4b42",
+        "mobilesdk_app_id": "1:1006939023844:android:49e136aebb4c3794757ff1",
         "android_client_info": {
           "package_name": "com.greensteps"
         }
       },
       "oauth_client": [
         {
-          "client_id": "162149895143-icbkkg0sbf5eh7l7h8mccjdej8p3u57a.apps.googleusercontent.com",
+          "client_id": "1006939023844-fji9s2v5q5krspfh2s80fac1b1juisk7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.greensteps",
-            "certificate_hash": "9f66b7159527e37afded3263eb5d9e3eafba7009"
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {
-          "client_id": "162149895143-50a97li5tsmt3gvo09r2gbcbnm4ro5er.apps.googleusercontent.com",
+          "client_id": "1006939023844-r3r5rg8a3nlpac9akn3ns82ibbrh08uu.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBGkvicXD9isFAmhBFgTHe5AQm4spWlN3s"
+          "current_key": "AIzaSyCwdtov6LDzxNjVkti5-yD6AbD83B1PayQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "162149895143-50a97li5tsmt3gvo09r2gbcbnm4ro5er.apps.googleusercontent.com",
+              "client_id": "1006939023844-9bm9dc1t1ds7dqr4l8ek138vpep77h9h.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
