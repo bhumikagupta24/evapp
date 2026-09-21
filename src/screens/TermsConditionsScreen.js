@@ -39,17 +39,17 @@ export default function TermsConditionsScreen() {
     {
       title: 'Acceptance of Terms',
       content:
-        'By downloading, installing, or using the Ev Service application, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the application.',
+        'By downloading, installing, or using the evservice application, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the application.',
     },
     {
       title: 'User Account',
       content:
-        'You must create an account to use Ev Service services. You are responsible for maintaining the confidentiality of your login credentials. You must provide accurate and complete information during registration and keep your profile up to date.',
+        'You must create an account to use evservice services. You are responsible for maintaining the confidentiality of your login credentials. You must provide accurate and complete information during registration and keep your profile up to date.',
     },
     {
       title: 'Charging Services',
       content:
-        'Ev Service connects EV owners with charging station partners. We do not own or operate charging stations directly. Charging availability, pricing, and station conditions are managed by individual station partners. Ev Service is not responsible for station downtime, hardware malfunctions, or pricing changes.',
+        'evservice connects EV owners with charging station partners. We do not own or operate charging stations directly. Charging availability, pricing, and station conditions are managed by individual station partners. evservice is not responsible for station downtime, hardware malfunctions, or pricing changes.',
     },
     {
       title: 'Payments & Billing',
@@ -59,12 +59,12 @@ export default function TermsConditionsScreen() {
     {
       title: 'Eco Points & Rewards',
       content:
-        'Eco Points are earned through charging sessions and represent your environmental impact. Points have no monetary value and cannot be exchanged for cash. Ev Service reserves the right to modify or discontinue the rewards program at any time with prior notice.',
+        'Eco Points are earned through charging sessions and represent your environmental impact. Points have no monetary value and cannot be exchanged for cash. evservice reserves the right to modify or discontinue the rewards program at any time with prior notice.',
     },
     {
       title: 'Partner Responsibilities',
       content:
-        'Station partners are responsible for maintaining accurate station information including pricing, availability, charger type, and operational hours. Partners must ensure their equipment meets safety standards. Ev Service may remove stations that violate these requirements.',
+        'Station partners are responsible for maintaining accurate station information including pricing, availability, charger type, and operational hours. Partners must ensure their equipment meets safety standards. evservice may remove stations that violate these requirements.',
     },
     {
       title: 'Privacy & Data',
@@ -79,7 +79,7 @@ export default function TermsConditionsScreen() {
     {
       title: 'Limitation of Liability',
       content:
-        "Ev Service is provided 'as is' without warranties. We are not liable for any indirect, incidental, or consequential damages arising from use of the application. Our total liability is limited to the amount you paid for services in the preceding 12 months.",
+        "evservice is provided 'as is' without warranties. We are not liable for any indirect, incidental, or consequential damages arising from use of the application. Our total liability is limited to the amount you paid for services in the preceding 12 months.",
     },
     {
       title: 'Changes to Terms',
@@ -119,7 +119,7 @@ export default function TermsConditionsScreen() {
             color={theme.primary}
           />
           <Text style={[styles.introText, {color: theme.subtext}]}>
-            Please read these terms carefully before using Ev Service. By using
+            Please read these terms carefully before using evservice. By using
             our services, you agree to the following terms.
           </Text>
         </View>

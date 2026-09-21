@@ -7,20 +7,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1006939023844:android:49e136aebb4c3794757ff1",
+        "mobilesdk_app_id": "1:1006939023844:android:f1477f915f96db2c757ff1",
         "android_client_info": {
-          "package_name": "com.greensteps"
+          "package_name": "com.evservice"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "1006939023844-fji9s2v5q5krspfh2s80fac1b1juisk7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.greensteps",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
         {
           "client_id": "1006939023844-r3r5rg8a3nlpac9akn3ns82ibbrh08uu.apps.googleusercontent.com",
           "client_type": 3

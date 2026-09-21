@@ -1,4 +1,4 @@
-package com.greensteps
+package com.evservice
 
 import android.app.Application
 import com.facebook.react.PackageList

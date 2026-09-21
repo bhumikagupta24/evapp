@@ -1,4 +1,4 @@
-package com.greensteps
+package com.evservice
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
