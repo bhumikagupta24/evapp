@@ -78,7 +78,7 @@ export default function ProfileScreen() {
         setRefreshing(false);
       },
       error => {
-        console.error('❌ Error listening to profile:', error);
+        console.warn('Profile listener warning:', error.message);
         setLoading(false);
         setRefreshing(false);
       },

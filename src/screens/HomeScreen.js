@@ -146,7 +146,7 @@ export default function HomeScreen({route}) {
           useNativeDriver: true,
         }).start();
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.warn('Data fetching warning:', error.message);
       } finally {
         setLoading(false);
       }

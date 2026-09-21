@@ -217,7 +217,7 @@ export default function AddStationScreen({route, navigation}) {
         ]);
       }
     } catch (error) {
-      console.error('❌ Firestore error:', error);
+      console.warn('Firestore write warning:', error.message);
       Alert.alert(
         'Error',
         `Failed to ${isEditMode ? 'update' : 'add'} station`,

@@ -102,7 +102,7 @@ export default function ViewStationsScreen() {
         setRefreshing(false);
       });
     } catch (error) {
-      console.error('Firestore fetch error:', error);
+      console.warn('Firestore fetch warning:', error.message);
       setLoading(false);
       setRefreshing(false);
     }
