@@ -25,7 +25,9 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import Geolocation from '@react-native-community/geolocation';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const {width} = Dimensions.get('window');
@@ -48,6 +50,35 @@ const CompleteProfileScreen = ({navigation, route}) => {
   const [profileImage, setProfileImage] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
+
+  const openDatePicker = () => {
+    if (Platform.OS === 'android') {
+      try {
+        DateTimePickerAndroid.open({
+          value: date instanceof Date ? date : new Date(),
+          onChange: (event, selectedDate) => {
+            if (event.type === 'set' && selectedDate) {
+              setDate(selectedDate);
+              const formattedDate = `${String(selectedDate.getDate()).padStart(
+                2,
+                '0',
+              )} / ${String(selectedDate.getMonth() + 1).padStart(
+                2,
+                '0',
+              )} / ${selectedDate.getFullYear()}`;
+              setDob(formattedDate);
+            }
+          },
+          mode: 'date',
+          maximumDate: new Date(),
+        });
+      } catch (err) {
+        console.warn('DatePicker open error:', err);
+      }
+    } else {
+      setShowDatePicker(true);
+    }
+  };
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -640,7 +671,7 @@ const CompleteProfileScreen = ({navigation, route}) => {
                       borderWidth: 1.5,
                     },
                   ]}
-                  onPress={() => setShowDatePicker(true)}>
+                  onPress={openDatePicker}>
                   <Icon
                     name="calendar-outline"
                     size={22}
@@ -659,14 +690,14 @@ const CompleteProfileScreen = ({navigation, route}) => {
                     {dob || 'DD / MM / YYYY'}
                   </Text>
                 </TouchableOpacity>
-                {showDatePicker && (
+                {Platform.OS === 'ios' && showDatePicker && (
                   <DateTimePicker
                     value={date instanceof Date ? date : new Date()}
                     mode="date"
-                    display={Platform.OS === 'android' ? 'spinner' : 'default'}
+                    display="default"
                     maximumDate={new Date()}
                     onChange={(event, selectedDate) => {
-                      setShowDatePicker(Platform.OS === 'ios');
+                      setShowDatePicker(false);
                       if (selectedDate) {
                         setDate(selectedDate);
                         const formattedDate = `${String(
