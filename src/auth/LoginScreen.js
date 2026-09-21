@@ -51,10 +51,15 @@ export default function LoginScreen({navigation}) {
         password,
       );
       if (userCredential.user) {
-        const db = getFirestore();
-        const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+        let userDoc = null;
+        try {
+          const db = getFirestore();
+          userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+        } catch (dbErr) {
+          console.log('Firestore profile check warning:', dbErr.message);
+        }
 
-        if (userDoc.exists) {
+        if (userDoc && userDoc.exists) {
           navigation.replace('TabBar');
         } else {
           navigation.navigate('PhoneLogin');
@@ -102,10 +107,15 @@ export default function LoginScreen({navigation}) {
       const user = userCredential.user;
 
       if (user) {
-        const db = getFirestore();
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        let userDoc = null;
+        try {
+          const db = getFirestore();
+          userDoc = await getDoc(doc(db, 'users', user.uid));
+        } catch (dbErr) {
+          console.log('Firestore profile check warning:', dbErr.message);
+        }
 
-        if (userDoc.exists) {
+        if (userDoc && userDoc.exists) {
           navigation.replace('TabBar');
         } else {
           navigation.navigate('PhoneLogin');
