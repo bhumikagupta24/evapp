@@ -12,6 +12,8 @@ import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../context/ThemeContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import Header from '../components/Header';
+
 const Section = ({number, title, content, theme}) => (
   <View style={[styles.section, {borderBottomColor: theme.border}]}>
     <View style={styles.sectionHeader}>
@@ -37,17 +39,17 @@ export default function TermsConditionsScreen() {
     {
       title: 'Acceptance of Terms',
       content:
-        'By downloading, installing, or using the GreenSteps application, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the application.',
+        'By downloading, installing, or using the Ev Service application, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the application.',
     },
     {
       title: 'User Account',
       content:
-        'You must create an account to use GreenSteps services. You are responsible for maintaining the confidentiality of your login credentials. You must provide accurate and complete information during registration and keep your profile up to date.',
+        'You must create an account to use Ev Service services. You are responsible for maintaining the confidentiality of your login credentials. You must provide accurate and complete information during registration and keep your profile up to date.',
     },
     {
       title: 'Charging Services',
       content:
-        'GreenSteps connects EV owners with charging station partners. We do not own or operate charging stations directly. Charging availability, pricing, and station conditions are managed by individual station partners. GreenSteps is not responsible for station downtime, hardware malfunctions, or pricing changes.',
+        'Ev Service connects EV owners with charging station partners. We do not own or operate charging stations directly. Charging availability, pricing, and station conditions are managed by individual station partners. Ev Service is not responsible for station downtime, hardware malfunctions, or pricing changes.',
     },
     {
       title: 'Payments & Billing',
@@ -57,12 +59,12 @@ export default function TermsConditionsScreen() {
     {
       title: 'Eco Points & Rewards',
       content:
-        'Eco Points are earned through charging sessions and represent your environmental impact. Points have no monetary value and cannot be exchanged for cash. GreenSteps reserves the right to modify or discontinue the rewards program at any time with prior notice.',
+        'Eco Points are earned through charging sessions and represent your environmental impact. Points have no monetary value and cannot be exchanged for cash. Ev Service reserves the right to modify or discontinue the rewards program at any time with prior notice.',
     },
     {
       title: 'Partner Responsibilities',
       content:
-        'Station partners are responsible for maintaining accurate station information including pricing, availability, charger type, and operational hours. Partners must ensure their equipment meets safety standards. GreenSteps may remove stations that violate these requirements.',
+        'Station partners are responsible for maintaining accurate station information including pricing, availability, charger type, and operational hours. Partners must ensure their equipment meets safety standards. Ev Service may remove stations that violate these requirements.',
     },
     {
       title: 'Privacy & Data',
@@ -77,7 +79,7 @@ export default function TermsConditionsScreen() {
     {
       title: 'Limitation of Liability',
       content:
-        "GreenSteps is provided 'as is' without warranties. We are not liable for any indirect, incidental, or consequential damages arising from use of the application. Our total liability is limited to the amount you paid for services in the preceding 12 months.",
+        "Ev Service is provided 'as is' without warranties. We are not liable for any indirect, incidental, or consequential damages arising from use of the application. Our total liability is limited to the amount you paid for services in the preceding 12 months.",
     },
     {
       title: 'Changes to Terms',
@@ -94,18 +96,7 @@ export default function TermsConditionsScreen() {
         backgroundColor={theme.background}
       />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={[styles.backBtn, {borderColor: theme.border}]}>
-          <Ionicons name="chevron-back" size={24} color={theme.text} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: theme.text}]}>
-          Terms & Conditions
-        </Text>
-        <View style={{width: 44}} />
-      </View>
+      <Header title="Terms & Conditions" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -128,7 +119,7 @@ export default function TermsConditionsScreen() {
             color={theme.primary}
           />
           <Text style={[styles.introText, {color: theme.subtext}]}>
-            Please read these terms carefully before using GreenSteps. By using
+            Please read these terms carefully before using Ev Service. By using
             our services, you agree to the following terms.
           </Text>
         </View>

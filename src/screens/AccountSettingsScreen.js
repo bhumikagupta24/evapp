@@ -84,7 +84,7 @@ export default function AccountSettingsScreen() {
         </Text>
         <View style={styles.section}>
           <SettingItem title="Help & Support" screen="HelpSupport" icon="🎧" />
-          <SettingItem title="About GreenSteps" screen="AboutApp" icon="ℹ️" />
+          <SettingItem title="About Ev Service" screen="AboutApp" icon="ℹ️" />
         </View>
       </ScrollView>
     </SafeAreaView>

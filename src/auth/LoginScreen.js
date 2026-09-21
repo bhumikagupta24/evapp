@@ -130,7 +130,7 @@ export default function LoginScreen({navigation}) {
           />
 
           <Text style={[styles.title, {color: theme.text}]}>
-            Welcome to GreenSteps
+            Welcome to Ev Service
           </Text>
 
           <TextInput

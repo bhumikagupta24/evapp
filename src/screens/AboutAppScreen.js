@@ -37,7 +37,7 @@ export default function AboutAppScreen() {
             ]}>
             <Text style={{fontSize: 60}}>⚡</Text>
           </View>
-          <Text style={[styles.appName, {color: theme.text}]}>GreenSteps</Text>
+          <Text style={[styles.appName, {color: theme.text}]}>Ev Service</Text>
           <Text style={[styles.version, {color: theme.subtext}]}>
             Version 1.0.0 (Stable)
           </Text>
@@ -48,7 +48,7 @@ export default function AboutAppScreen() {
               {backgroundColor: theme.card, borderColor: theme.border},
             ]}>
             <Text style={[styles.description, {color: theme.text}]}>
-              GreenSteps is your all-in-one companion for eco-friendly EV
+              Ev Service is your all-in-one companion for eco-friendly EV
               charging. Our mission is to accelerate the transition to
               sustainable energy by providing a seamless, rewarding, and
               efficient charging experience.
@@ -61,7 +61,7 @@ export default function AboutAppScreen() {
             </Text>
             <Text style={[styles.text, {color: theme.subtext}]}>
               We believe in a greener future where every step counts. By using
-              GreenSteps, you are not just charging your vehicle; you are
+              Ev Service, you are not just charging your vehicle; you are
               contributing to a global movement to reduce carbon emissions and
               preserve our planet for future generations.
             </Text>
@@ -71,7 +71,7 @@ export default function AboutAppScreen() {
 
           <View style={styles.footer}>
             <Text style={[styles.footerText, {color: theme.subtext}]}>
-              © 2026 GreenSteps Team
+              © 2026 Ev Service Team
             </Text>
             <Text style={[styles.footerText, {color: theme.subtext}]}>
               Powered by Renewable Innovation
