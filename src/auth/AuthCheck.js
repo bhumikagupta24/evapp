@@ -10,13 +10,18 @@ export default function AuthCheck({navigation}) {
     const unsubscribe = auth().onAuthStateChanged(async user => {
       try {
         if (user) {
-          const db = getFirestore();
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          let userDoc = null;
+          try {
+            const db = getFirestore();
+            userDoc = await getDoc(doc(db, 'users', user.uid));
+          } catch (dbError) {
+            console.log('Firestore read warning (check security rules):', dbError.message);
+          }
 
-          if (userDoc.exists) {
+          if (userDoc && userDoc.exists) {
             navigation.replace('TabBar'); // Profile exists, go to home
           } else {
-            navigation.replace('CompleteProfile'); // Profile incomplete
+            navigation.replace('CompleteProfile'); // Profile incomplete or first sign-in
           }
         } else {
           navigation.replace('Onboarding'); // Not signed in
